@@ -13,7 +13,7 @@ Make sure you have [Node.js](http://nodejs.org/) installed.
 ```sh
 cd nodejs-nodemailer
 npm install
-cv .env.example .env
+cp .env.example .env
 input .env
 change lesssecureapps on gmail
 npm start
