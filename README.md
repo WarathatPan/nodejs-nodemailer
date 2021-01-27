@@ -2,7 +2,7 @@
 
 ---
 
-# Node.Js-Line-Notify
+# Node.Js-Nodemailer
 
 A barebones Node.js app using [Express 4](http://expressjs.com/).
 
@@ -11,7 +11,7 @@ A barebones Node.js app using [Express 4](http://expressjs.com/).
 Make sure you have [Node.js](http://nodejs.org/) installed.
 
 ```sh
-cd nodejs-line-notify
+cd nodejs-nodemailer
 npm install
 cv .env.example .env
 input .env
