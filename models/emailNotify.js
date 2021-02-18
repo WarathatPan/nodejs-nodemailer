@@ -1,38 +1,42 @@
 const nodemailer = require('nodemailer');
 
-require('dotenv').config();
-
-// crypt password
-const crypt = require('../utils/crypt');
-const gmail_user = process.env.GMAIL_USER || '';
-const gmail_password = process.env.GMAIL_PASSWORD || '';
-const gmail_from = process.env.GMAIL_FROM || '';
-const encryptedPassword = crypt.encrypt(gmail_password);
-const transport = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: gmail_user,
-    pass: crypt.decrypt(encryptedPassword),
-  },
-});
-
 /**
  * 
+ * @param from from
  * @param to to
  * @param subject subject
  * @param message message
+ * @param clientId clientId
+ * @param clientSecret clientSecret
+ * @param refreshToken refreshToken
+ * @param accessToken accessToken
  * @return messageJson { statusCode: number, info: Object{} } 
  * @usage emailNotifyService({to, subject, message})
  */
-function emailNotifyService({to, subject, message}) {
+
+function emailNotifyService({from, to, subject, message, clientId, clientSecret, refreshToken, accessToken}) {
+  const transport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      type: 'OAuth2',
+      user: from,
+      clientId: clientId,
+      clientSecret: clientSecret,
+      refreshToken: refreshToken,
+      accessToken: accessToken,
+    }
+  });
+
   const mailOptions = {
-    from: gmail_from,
+    from: from,
     to,
     subject,
     html: message,
   };
 
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     transport.sendMail(mailOptions, (err, info) => {
       if (!err) {
         const messageJson = {
@@ -48,6 +52,13 @@ function emailNotifyService({to, subject, message}) {
         reject(messageJson);
       }
     });
+  }).catch((err) => {
+    const messageJson = {
+      statusCode: 400,
+      err: err,
+    };
+    console.log('err==> ', err);
+    return messageJson;
   });
 }
 
